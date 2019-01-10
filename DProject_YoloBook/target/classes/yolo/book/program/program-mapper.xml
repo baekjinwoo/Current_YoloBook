@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapping파일 -->
+  <mapper namespace="program"> <!-- bakery = bakeryVO -->
+		<!-- 1. 프로그램 전체조회 -->
+		<select id="selectAll" resultType="program">
+			SELECT * FROM PROGRAM
+		</select>
+		
+		<!-- 2. 해당 번호의 프로그램 조회하라 -->
+		<select id="getProgram" resultType="program" parameterType="int">
+			SELECT * FROM PROGRAM 
+			WHERE P_NUMBER = #{P_NUMBER}
+		</select>
+		
+		<!-- 4. 프로그램 제거 -->
+		<delete id="deleteProgram" parameterType="int">
+			DELETE PROGRAM WHERE P_NUMBER=#{P_NUMBER}
+		</delete>
+		
+		<!-- 5. 프로그램 수정 -->
+		<update id="update" parameterType="java.util.Map">
+		UPDATE PROGRAM
+		SET STARTTIME = #{STARTTIME}, ENDTIME= #{ENDTIME}, PRICE= #{PRICE}
+		WHERE PNUMBER = #{P_NUMBER} 
+		</update>
+		
+		<!--6. 예약하기 -->
+		<insert id="insertPayInfo" parameterType="book">
+			INSERT INTO BOOK 
+			VALUES(b_number_seq.nextval, #{m_number}, #{p_number}, #{payinfo})
+		</insert>
+		
+
+		<select id="getRandomProgram" resultType="program">
+		<![CDATA[      
+ 			SELECT * FROM (SELECT * FROM PROGRAM ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM <= 6 
+ 		]]> 
+		</select>
+		
+		
+		
+		<!--8. 승인 전 프로그램 조회 -->
+		<select id="getProgramBeforeApproval" resultType="program">
+			SELECT * FROM PROGRAM WHERE P_STATUS=2
+		</select>
+		
+		<!-- 9. 프로그램 등록 -->
+		<insert id="registerprogram" parameterType="program">
+			INSERT INTO PROGRAM(P_NUMBER, M_NUMBER, P_NAME, STARTTIME, ENDTIME, P_DATE, PRICE, LIMITOFSTUDENTS, P_INTRODUCTION, P_THUMBNAIL_FILENAME, P_CLASS, P_STATUS, P_SYLLABUS_FILENAME ) 
+			VALUES(P_NUMBER_SEQ.NEXTVAL, #{m_number}, #{p_name}, #{starttime}, #{endtime}, #{p_date}, #{price}, #{limitofstudents}, #{p_introduction}, #{p_thumbnail_filename}, #{p_class}, #{p_status}, #{p_syllabus_filename}) 
+		</insert>
+		
+		<!-- 10. 미승인프로그램 승인하기 -->
+		<update id="approveProgram" parameterType="int">
+			UPDATE PROGRAM 
+			SET P_STATUS=3
+			WHERE P_NUMBER=#{p_number}
+		</update> 
+		
+		<!-- 12.전체 회원등급 번호말고 등급명으로 변경하기 -->  
+		<select id="alterGradeList" resultType="String">
+			SELECT P_STATUS_NAME 
+			FROM PROGRAM A , PROGRAM_STATUS B
+			WHERE A.P_STATUS=B.P_STATUS
+		</select>
+  </mapper>

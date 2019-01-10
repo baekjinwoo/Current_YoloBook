@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="main">
+
+	<select id="getMainProgram" resultType="program">
+		SELECT * 
+		FROM PROGRAM
+	</select>
+
+	<select id="getMainProgramList" parameterType="int" resultType="program">
+		SELECT * 
+		FROM PROGRAM where p_class=#{p_class}
+	</select>
+
+	<insert id="insertBook" parameterType="int[]">
+		INSERT INTO BOOK
+		VALUES
+		(<foreach separator="," item="number" collection="array">
+		#{number}
+		</foreach>
+		)
+	</insert>
+	
+
+	<select id="showBookResult" parameterType="int" resultType="program">
+		SELECT * FROM PROGRAM
+		WHERE P_NUMBER = #{p_number}
+	</select>
+	
+	<select id="checkMyBook" parameterType="int" resultType="program">
+		SELECT P.*
+		FROM BOOK B, PERSON M, PROGRAM P
+		WHERE B.M_NUMBER=M.M_NUMBER AND B.P_NUMBER=P.P_NUMBER AND B.M_NUMBER=#{m_number}
+	</select>
+
+</mapper>

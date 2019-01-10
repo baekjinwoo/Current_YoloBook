@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<select id="getLecturerBeforeApproval" resultType="member">
+		SELECT * FROM MEMBER WHERE M_STATUS=2
+	</select>
+	
+	<update id="approveMember2" parameterType="int">
+		UPDATE MEMBER 
+		SET M_STATUS=3
+		WHERE M_NUMBER=#{m_number}
+	</update>
+
+	<select id="getMemberList" resultType="member">
+		SELECT * FROM MEMBER
+	</select>
+	
+	<select id="checkLogin" parameterType="String" resultType="member">
+		SELECT * FROM
+		MEMBER WHERE ID= #{ID}
+	</select>
+
+<insert id="insertMember" parameterType="member">
+	<if test="m_status==1">
+		INSERT INTO MEMBER(m_number, id, pw, email, phone, m_name, m_status) 
+		VALUES(m_number_seq.nextval, #{id}, #{pw}, #{email}, #{phone}, #{m_name}, #{m_status}) 
+	</if>
+	
+	<if test="m_status==2">
+	<!-- 강사회원일 경우의 INSERT문 -->
+	INSERT INTO MEMBER(m_number, id, pw, email, phone, m_name, m_status, m_introduction, certification_filename) 
+	VALUES(m_number_seq.nextval, #{id}, #{pw}, #{email}, #{phone}, #{m_name}, #{m_status}, #{m_introduction}, #{certification_filename}) 
+	</if>
+</insert>
+	
+	<!-- 중복체크 -->
+	<select id="checkId" parameterType="String" resultType="String">
+		select id from MEMBER where id = #{id}
+	</select>
+
+	<!-- 수정 -->
+	<update id="updateMember" parameterType="java.util.Map">
+		update MEMBER
+		set email = #{email}, phone= #{phone}, m_name= #{m_name}
+		where id = #{id} and pw = #{pw} 
+	</update>
+	
+	<!-- 회원정보삭제 -->
+	<delete id="deleteMember" parameterType="java.util.Map">
+		delete MEMBER where id = #{id} and pw = #{pw}
+	</delete>
+	
+		<!-- 경철 내 예약 정보보기 -->
+	<select id='getMybook' parameterType="int" resultType="book">
+		SELECT * FROM BOOK
+		WHERE m_number=#{m_number}
+	</select>
+	
+	<!-- 11.현재 회원등급 번호말고 등급명으로 변경하기 -->  
+	<select id="alterGrade" parameterType="int" resultType="string">
+		SELECT M_STATUS_NAME FROM
+		MEMBER A , MEMBER_STATUS B
+		WHERE A.M_STATUS=B.M_STATUS
+		AND A.M_STATUS=#{m_status} 
+		AND M_NUMBER=#{m_number} 
+	</select>
+	
+	<!-- 12.전체 회원등급 번호말고 등급명으로 변경하기 -->  
+	<select id="alterGradeList" resultType="String">
+		SELECT M_STATUS_NAME 
+		FROM MEMBER A , MEMBER_STATUS B
+		WHERE A.M_STATUS=B.M_STATUS 
+	</select>
+</mapper>
